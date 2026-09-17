@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seattle Metro Baseball</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚾</text></svg>" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- React + ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- Babel (transforms JSX in-browser) -->
+  <!-- Pinned to last stable Babel 7.x release. Babel 8 (released June 2026) ships ESM-only and breaks this in-browser script-tag setup. -->
+  <script src="https://unpkg.com/@babel/standalone@7.29.7/babel.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@400;600;700&family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; background: #f2f2f0; }
+    #root { min-height: 100vh; }
+
+    /* Loading screen shown before React mounts */
+    #splash {
+      position: fixed; inset: 0;
+      background: #0a1628;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 16px; z-index: 9999;
+      transition: opacity 0.4s ease;
+    }
+    #splash.hidden { opacity: 0; pointer-events: none; }
+    #splash-title {
+      color: white;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.4rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    #splash-sub {
+      color: rgba(255,255,255,0.4);
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .spinner {
+      width: 28px; height: 28px;
+      border: 3px solid rgba(255,255,255,0.15);
+      border-top-color: #e53e3e;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+  </style>
+</head>
+<body>
+
+  <!-- Loading splash -->
+  <div id="splash">
+    <div id="splash-title">⚾ Seattle Metro Baseball</div>
+    <div class="spinner"></div>
+    <div id="splash-sub">Loading league data…</div>
+  </div>
+
+  <div id="root"></div>
+
+  <!-- ── Persistence module ─────────────────────────────────────────────────── -->
+  <!-- Edit SUPABASE_URL and SUPABASE_ANON_KEY below after creating your project -->
+  <script>
+    (function() {
+      const SUPABASE_URL  = "https://jnzfonzojzevokivnhjf.supabase.co";
+      const SUPABASE_ANON = "sb_publishable_jr7oWFj4LF6WgNGwj26CLw_TrzwYqkp";
+      const LS_KEY = "baseball_league_v1";
+      const TABLE  = "league_state";
+      const ROW_ID = 1;
+
+      const SCOUT_LS_KEY = "baseball_scouting_v1";
+      const SCOUT_TABLE  = "scouting_state";
+      const SCOUT_ROW_ID = 1;
+
+      function lsSave(teams) {
+        try { localStorage.setItem(LS_KEY, JSON.stringify(teams)); } catch(e) {}
+      }
+      function lsLoad() {
+        try { const r = localStorage.getItem(LS_KEY); return r ? JSON.parse(r) : null; }
+        catch(e) { return null; }
+      }
+
+      const isConfigured = () =>
+        SUPABASE_URL !== "YOUR_SUPABASE_URL" && SUPABASE_ANON !== "YOUR_SUPABASE_ANON_KEY";
+
+      async function sbFetch(path, options = {}) {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+          headers: {
+            "apikey": SUPABASE_ANON,
+            "Authorization": `Bearer ${SUPABASE_ANON}`,
+            "Content-Type": "application/json",
+            "Prefer": options.prefer || "return=minimal",
+            ...(options.headers || {}),
+          },
+          method: options.method || "GET",
+          body: options.body || undefined,
+        });
+        if (!res.ok) { const e = await res.text(); throw new Error(`${res.status}: ${e}`); }
+        const t = await res.text();
+        return t ? JSON.parse(t) : null;
+      }
+
+      async function dbLoad() {
+        if (!isConfigured()) return null;
+        try {
+          const rows = await sbFetch(`${TABLE}?id=eq.${ROW_ID}&select=data`);
+          return (rows && rows.length > 0) ? rows[0].data : null;
+        } catch(e) {
+          console.warn("Supabase load failed:", e.message);
+          return null;
+        }
+      }
+
+      async function dbSave(teams) {
+        if (!isConfigured()) return;
+        try {
+          // Upsert: try update first, then insert
+          const existing = await sbFetch(`${TABLE}?id=eq.${ROW_ID}&select=id`);
+          if (existing && existing.length > 0) {
+            await sbFetch(`${TABLE}?id=eq.${ROW_ID}`, {
+              method: "PATCH",
+              body: JSON.stringify({ data: teams }),
+              prefer: "return=minimal",
+            });
+          } else {
+            await sbFetch(TABLE, {
+              method: "POST",
+              body: JSON.stringify({ id: ROW_ID, data: teams }),
+              prefer: "return=minimal",
+            });
+          }
+        } catch(e) {
+          console.warn("Supabase save failed:", e.message);
+          throw e;
+        }
+      }
+
+      async function scoutDbLoad() {
+        if (!isConfigured()) return null;
+        try {
+          const rows = await sbFetch(`${SCOUT_TABLE}?id=eq.${SCOUT_ROW_ID}&select=data`);
+          return (rows && rows.length > 0) ? rows[0].data : null;
+        } catch(e) {
+          console.warn("Supabase scouting load failed:", e.message);
+          return null;
+        }
+      }
+
+      async function scoutDbSave(games) {
+        if (!isConfigured()) return;
+        try {
+          const existing = await sbFetch(`${SCOUT_TABLE}?id=eq.${SCOUT_ROW_ID}&select=id`);
+          if (existing && existing.length > 0) {
+            await sbFetch(`${SCOUT_TABLE}?id=eq.${SCOUT_ROW_ID}`, {
+              method: "PATCH",
+              body: JSON.stringify({ data: games }),
+              prefer: "return=minimal",
+            });
+          } else {
+            await sbFetch(SCOUT_TABLE, {
+              method: "POST",
+              body: JSON.stringify({ id: SCOUT_ROW_ID, data: games }),
+              prefer: "return=minimal",
+            });
+          }
+        } catch(e) {
+          console.warn("Supabase scouting save failed:", e.message);
+          throw e;
+        }
+      }
+
+      window.DB = { lsSave, lsLoad, dbLoad, dbSave, scoutDbLoad, scoutDbSave, supabaseConfigured: isConfigured };
+    })();
+  </script>
+
+  <!-- ── App ───────────────────────────────────────────────────────────────── -->
+  <!-- Team logos (plain JS, not parsed by Babel) -->
+  <script src="logos_data.js"></script>
+
+  <!-- App logic (JSX compiled by Babel — now under 500KB) -->
+  <script type="text/babel" data-presets="react" src="app_nologos.jsx"></script>
+
+  <!-- ── Mount ─────────────────────────────────────────────────────────────── -->
+  <script>
+    // Poll until BaseballApp is defined by Babel, then mount
+    const mount = () => {
+      if (typeof BaseballApp === "undefined") {
+        return setTimeout(mount, 50);
+      }
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(React.createElement(BaseballApp));
+      // Hide splash after short delay
+      setTimeout(() => {
+        const s = document.getElementById("splash");
+        if (s) { s.classList.add("hidden"); setTimeout(() => s.remove(), 500); }
+      }, 600);
+    };
+    mount();
+  </script>
+
+</body>
+</html>
