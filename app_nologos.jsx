@@ -1330,7 +1330,7 @@ function TeamPage({ team, teams, onBack, onUploadSchedule, onAddGame, onDeleteGa
             <button key={t} onClick={() => setTab(t)}
               className="px-5 py-3 text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap"
               style={{
-                color: tab===t ? "#0a1628" : "#9ca3af",
+                color: tab===t ? "var(--tab-active, #0a1628)" : "#9ca3af",
                 borderBottom: tab===t ? "3px solid #e53e3e" : "3px solid transparent",
                 letterSpacing: "0.1em",
                 fontFamily: BODY,
@@ -1383,7 +1383,7 @@ function TeamPage({ team, teams, onBack, onUploadSchedule, onAddGame, onDeleteGa
               ) : dateKeys.map(dateKey => (
                 <div key={dateKey} className="mb-4">
                   {/* Date header — ESPN style */}
-                  <div className="px-4 py-2 border-b-2 border-stone-800" style={{background:"#fff"}}>
+                  <div className="px-4 py-2 border-b-2 border-stone-800" style={{background:"var(--card-bg, #fff)"}}>
                     <p className="text-xs font-black uppercase text-stone-800" style={{fontFamily:BODY, letterSpacing:"0.1em"}}>{fmtDayHeader(dateKey)}</p>
                   </div>
                   {/* Column headers */}
@@ -1816,31 +1816,28 @@ function TeamPage({ team, teams, onBack, onUploadSchedule, onAddGame, onDeleteGa
 }
 
 // ── Team Logo Wall (hero background) ────────────────────────────────────────
-// Tiles every Metro League team's logo/badge to fill the hero banner, in place
-// of the old skyline photo. Repeats the team list so the grid stays dense
-// regardless of viewport width.
+// Shows every Metro League team's logo/badge once, centered and evenly
+// spaced across the hero banner, in place of the old skyline photo.
 function TeamLogoWall() {
   const names = Object.keys(TEAM_META);
-  const tiles = [];
-  for (let i = 0; i < 5; i++) tiles.push(...names);
   return (
-    <div style={{ position:"absolute", inset:0, opacity:0.9 }}>
+    <div style={{ position:"absolute", inset:0, opacity:0.85 }}>
       <div style={{
-        display:"flex", flexWrap:"wrap", alignContent:"flex-start",
-        gap:10, padding:10, height:"100%", overflow:"hidden",
+        display:"flex", flexWrap:"wrap", alignContent:"center", justifyContent:"center",
+        gap:16, padding:20, height:"100%", overflow:"hidden",
       }}>
-        {tiles.map((name, i) => {
+        {names.map((name) => {
           const meta = TEAM_META[name] || { bg:"#334155", text:"#ffffff", init:"?" };
           const logo = TEAM_LOGOS[name];
           return (
-            <div key={name + i} style={{
-              width:52, height:52, borderRadius:10, flexShrink:0,
+            <div key={name} style={{
+              width:60, height:60, borderRadius:12, flexShrink:0,
               background: meta.bg, display:"flex", alignItems:"center",
               justifyContent:"center", overflow:"hidden",
             }}>
               {logo
-                ? <img src={logo} alt="" style={{width:"100%", height:"100%", objectFit:"contain", padding:4}} />
-                : <span style={{color:meta.text, fontFamily:DISPLAY, fontWeight:900, fontSize:14}}>{meta.init}</span>}
+                ? <img src={logo} alt="" style={{width:"100%", height:"100%", objectFit:"contain", padding:5}} />
+                : <span style={{color:meta.text, fontFamily:DISPLAY, fontWeight:900, fontSize:16}}>{meta.init}</span>}
             </div>
           );
         })}
@@ -2155,10 +2152,10 @@ function WARLitePage({ teams, onTeamClick }) {
               ))}
             </div>
           </div>
-          <div className="bg-white border border-stone-200 overflow-x-auto">
+          <div className="bg-white border border-stone-200 overflow-x-auto" style={{maxHeight:"70vh", overflowY:"auto"}}>
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-stone-50 border-b border-stone-200 sticky top-[80px] z-20">
+                <tr className="bg-stone-50 border-b border-stone-200 sticky top-0 z-20">
                   <th className="px-3 py-2 text-left text-xs font-bold text-stone-500 uppercase tracking-wide w-8">#</th>
                   <th className="px-3 py-2 text-left text-xs font-bold text-stone-500 uppercase tracking-wide">Player</th>
                   <th className="px-3 py-2 text-center text-xs font-bold text-stone-500 uppercase tracking-wide">PA</th>
@@ -2210,10 +2207,10 @@ function WARLitePage({ teams, onTeamClick }) {
               ))}
             </div>
           </div>
-          <div className="bg-white border border-stone-200 overflow-x-auto">
+          <div className="bg-white border border-stone-200 overflow-x-auto" style={{maxHeight:"70vh", overflowY:"auto"}}>
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-stone-50 border-b border-stone-200 sticky top-[80px] z-20">
+                <tr className="bg-stone-50 border-b border-stone-200 sticky top-0 z-20">
                   <th className="px-3 py-2 text-left text-xs font-bold text-stone-500 uppercase tracking-wide w-8">#</th>
                   <th className="px-3 py-2 text-left text-xs font-bold text-stone-500 uppercase tracking-wide">Player</th>
                   <th className="px-3 py-2 text-center text-xs font-bold text-stone-500 uppercase tracking-wide">IP</th>
@@ -2406,10 +2403,10 @@ function TeamStatsPage({ teams, onTeamClick }) {
           ))}
         </div>
       </div>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto" style={{maxHeight:"70vh", overflowY:"auto"}}>
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-stone-50 border-b border-stone-100 sticky top-[80px] z-20">
+            <tr className="bg-stone-50 border-b border-stone-100 sticky top-0 z-20">
               <th className="text-left px-4 py-3 text-xs font-bold text-stone-400 uppercase tracking-wider sticky left-0 bg-stone-50">Team</th>
               {view === "standings" && <>
                 <Th label="W" col="wins"/><Th label="L" col="losses"/><Th label="PCT" col="pct"/>
@@ -2579,11 +2576,11 @@ function AllPlayersPage({ teams, onTeamClick }) {
           </div>
         </div>
       </div>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto" style={{maxHeight:"70vh", overflowY:"auto"}}>
         {view === "hitting" && (
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-stone-50 border-b border-stone-100 sticky top-[80px] z-20">
+              <tr className="bg-stone-50 border-b border-stone-100 sticky top-0 z-20">
                 <th className="text-center px-3 py-3 text-xs font-bold text-stone-400 uppercase tracking-wider sticky left-0 bg-stone-50 w-8">#</th>
                 <th className="text-left px-4 py-3 text-xs font-bold text-stone-400 uppercase tracking-wider">Player</th>
                 <th className="text-left px-3 py-3 text-xs font-bold text-stone-400 uppercase tracking-wider">Team</th>
@@ -2635,7 +2632,7 @@ function AllPlayersPage({ teams, onTeamClick }) {
         {view === "pitching" && (
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-stone-50 border-b border-stone-100 sticky top-[80px] z-20">
+              <tr className="bg-stone-50 border-b border-stone-100 sticky top-0 z-20">
                 <th className="text-center px-3 py-3 text-xs font-bold text-stone-400 uppercase tracking-wider sticky left-0 bg-stone-50 w-8">#</th>
                 <th className="text-left px-4 py-3 text-xs font-bold text-stone-400 uppercase tracking-wider">Pitcher</th>
                 <th className="text-left px-3 py-3 text-xs font-bold text-stone-400 uppercase tracking-wider">Team</th>
@@ -3052,9 +3049,9 @@ function StandingsPage({ teams, onTeamClick, onUploadTeams, onUploadSchedule, on
                       <div key={dateKey}>
                         {/* Day separator */}
                         <div className="px-4 py-1.5 border-b border-t border-stone-100 flex items-center gap-2"
-                          style={{background: isThisToday ? "#0a1628" : di === 0 ? "#f0f0ee" : "#f5f4f1"}}>
+                          style={{background: isThisToday ? "#0a1628" : di === 0 ? "var(--day-bg-a, #f0f0ee)" : "var(--day-bg-b, #f5f4f1)"}}>
                           <p className="text-xs font-black uppercase"
-                            style={{fontFamily:BODY, letterSpacing:"0.09em", color: isThisToday ? "white" : "#57534e"}}>
+                            style={{fontFamily:BODY, letterSpacing:"0.09em", color: isThisToday ? "white" : "var(--day-text, #57534e)"}}>
                             {full}
                           </p>
                           {isThisToday && <span className="text-xs font-black text-red-400 uppercase tracking-wider">Today</span>}
