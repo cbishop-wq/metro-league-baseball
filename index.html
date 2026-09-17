@@ -24,10 +24,62 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@400;600;700&family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet" />
 
+  <!-- Dark mode: apply saved preference before first paint to avoid a flash -->
+  <script>
+    (function() {
+      try {
+        if (localStorage.getItem("theme") === "dark") {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      } catch (e) {}
+    })();
+  </script>
+
   <style>
     *, *::before, *::after { box-sizing: border-box; }
-    body { margin: 0; background: #f2f2f0; }
+    :root { --page-bg: #f2f2f0; }
+    html[data-theme="dark"] { --page-bg: #0b1220; }
+    body { margin: 0; background: var(--page-bg, #f2f2f0); }
     #root { min-height: 100vh; }
+
+    /* ── Dark theme overrides ──────────────────────────────────────────── */
+    /* The app is built with Tailwind's Play CDN, so instead of dark: variants
+       everywhere, we override the specific neutral utility classes it uses
+       once html[data-theme="dark"] is set. Brand/status colors (sky, emerald,
+       red, orange) and the always-navy header stay the same in both themes. */
+    html[data-theme="dark"] .bg-white { background-color: #151c2c; }
+    html[data-theme="dark"] .bg-stone-50 { background-color: #101725; }
+    html[data-theme="dark"] .bg-stone-50\/50 { background-color: rgba(16,23,37,0.5); }
+    html[data-theme="dark"] .bg-stone-50\/60 { background-color: rgba(16,23,37,0.6); }
+    html[data-theme="dark"] .bg-stone-100 { background-color: #1b2333; }
+    html[data-theme="dark"] .bg-stone-200 { background-color: #263041; }
+    html[data-theme="dark"] .bg-stone-300 { background-color: #334155; }
+
+    html[data-theme="dark"] .text-stone-300 { color: #cbd5e1; }
+    html[data-theme="dark"] .text-stone-400 { color: #94a3b8; }
+    html[data-theme="dark"] .text-stone-500 { color: #a8b3c4; }
+    html[data-theme="dark"] .text-stone-600 { color: #c3cbd8; }
+    html[data-theme="dark"] .text-stone-700 { color: #dbe1ea; }
+    html[data-theme="dark"] .text-stone-800 { color: #eef1f6; }
+    html[data-theme="dark"] .text-stone-900 { color: #ffffff; }
+
+    html[data-theme="dark"] .border-stone-50 { border-color: #1b2333; }
+    html[data-theme="dark"] .border-stone-100 { border-color: #202a3b; }
+    html[data-theme="dark"] .border-stone-200 { border-color: #2b3648; }
+    html[data-theme="dark"] .border-stone-200\/50 { border-color: rgba(43,54,72,0.5); }
+    html[data-theme="dark"] .border-stone-300 { border-color: #3a4759; }
+    html[data-theme="dark"] .border-stone-400 { border-color: #4b5768; }
+    html[data-theme="dark"] .border-stone-800 { border-color: #0b1220; }
+
+    html[data-theme="dark"] .divide-stone-50 > :not([hidden]) ~ :not([hidden]) { border-color: #1b2333; }
+    html[data-theme="dark"] .divide-stone-100 > :not([hidden]) ~ :not([hidden]) { border-color: #202a3b; }
+
+    html[data-theme="dark"] input,
+    html[data-theme="dark"] select {
+      background-color: #151c2c;
+      color: #eef1f6;
+    }
+    html[data-theme="dark"] input::placeholder { color: #64748b; }
 
     /* Loading screen shown before React mounts */
     #splash {

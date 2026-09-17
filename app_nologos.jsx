@@ -559,18 +559,19 @@ Match player names using last name if full name not found. Ignore jersey numbers
 function TeamBadge({ name, size = "md" }) {
   const meta = TEAM_META[name] || { bg: "#334155", text: "#ffffff", init: (name||"?").slice(0,2).toUpperCase() };
   const logo = TEAM_LOGOS[name];
-  const sz = size === "lg" ? "w-12 h-12" : size === "sm" ? "w-7 h-7" : "w-9 h-9";
-  const txtSz = size === "lg" ? "text-sm" : "text-xs";
+  const sz = size === "lg" ? "w-12 h-12" : size === "sm" ? "w-7 h-7" : size === "xs" ? "w-5 h-5" : "w-9 h-9";
+  const txtSz = size === "lg" ? "text-sm" : size === "xs" ? "text-[8px]" : "text-xs";
+  const rounded = size === "xs" ? "rounded" : "rounded-lg";
   if (logo) {
     return (
-      <div className={`${sz} rounded-lg flex-shrink-0 overflow-hidden`}
+      <div className={`${sz} ${rounded} flex-shrink-0 overflow-hidden`}
         style={{ backgroundColor: meta.bg }}>
         <img src={logo} alt={name} className="w-full h-full object-contain p-0.5" />
       </div>
     );
   }
   return (
-    <div className={`${sz} ${txtSz} rounded-lg flex items-center justify-center font-black flex-shrink-0`}
+    <div className={`${sz} ${rounded} ${txtSz} flex items-center justify-center font-black flex-shrink-0`}
       style={{ backgroundColor: meta.bg, color: meta.text, fontFamily: DISPLAY, letterSpacing: "0.02em" }}>
       {meta.init}
     </div>
@@ -1281,7 +1282,7 @@ function TeamPage({ team, teams, onBack, onUploadSchedule, onAddGame, onDeleteGa
 
   return (
     <>
-    <div className="min-h-screen text-stone-800" style={{ fontFamily:BODY, backgroundColor:"#f2f2f0" }}>
+    <div className="min-h-screen text-stone-800" style={{ fontFamily:BODY, backgroundColor:"var(--page-bg, #f2f2f0)" }}>
       <FontLink />
 
       {/* Sticky nav bar */}
@@ -1813,17 +1814,38 @@ function TeamPage({ team, teams, onBack, onUploadSchedule, onAddGame, onDeleteGa
     </>
   );
 }
-// ── Seattle Skyline Photo ─────────────────────────────────────────────────────
-const SKYLINE_IMG = "data:image/jpeg;base64,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";
-function SeattleSkyline() {
+
+// ── Team Logo Wall (hero background) ────────────────────────────────────────
+// Tiles every Metro League team's logo/badge to fill the hero banner, in place
+// of the old skyline photo. Repeats the team list so the grid stays dense
+// regardless of viewport width.
+function TeamLogoWall() {
+  const names = Object.keys(TEAM_META);
+  const tiles = [];
+  for (let i = 0; i < 5; i++) tiles.push(...names);
   return (
-    <div style={{
-      position:"absolute", inset:0,
-      backgroundImage:`url(${SKYLINE_IMG})`,
-      backgroundSize:"cover",
-      backgroundPosition:"center 40%",
-      opacity:0.75,
-    }} />
+    <div style={{ position:"absolute", inset:0, opacity:0.9 }}>
+      <div style={{
+        display:"flex", flexWrap:"wrap", alignContent:"flex-start",
+        gap:10, padding:10, height:"100%", overflow:"hidden",
+      }}>
+        {tiles.map((name, i) => {
+          const meta = TEAM_META[name] || { bg:"#334155", text:"#ffffff", init:"?" };
+          const logo = TEAM_LOGOS[name];
+          return (
+            <div key={name + i} style={{
+              width:52, height:52, borderRadius:10, flexShrink:0,
+              background: meta.bg, display:"flex", alignItems:"center",
+              justifyContent:"center", overflow:"hidden",
+            }}>
+              {logo
+                ? <img src={logo} alt="" style={{width:"100%", height:"100%", objectFit:"contain", padding:4}} />
+                : <span style={{color:meta.text, fontFamily:DISPLAY, fontWeight:900, fontSize:14}}>{meta.init}</span>}
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -2136,7 +2158,7 @@ function WARLitePage({ teams, onTeamClick }) {
           <div className="bg-white border border-stone-200 overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-stone-50 border-b border-stone-200">
+                <tr className="bg-stone-50 border-b border-stone-200 sticky top-[80px] z-20">
                   <th className="px-3 py-2 text-left text-xs font-bold text-stone-500 uppercase tracking-wide w-8">#</th>
                   <th className="px-3 py-2 text-left text-xs font-bold text-stone-500 uppercase tracking-wide">Player</th>
                   <th className="px-3 py-2 text-center text-xs font-bold text-stone-500 uppercase tracking-wide">PA</th>
@@ -2157,7 +2179,10 @@ function WARLitePage({ teams, onTeamClick }) {
                         <div className="font-bold text-stone-800" style={{fontFamily:DISPLAY}}>{p.name}
                           {p.grade && <span className="ml-1 text-xs font-normal text-stone-400">{p.grade}</span>}
                         </div>
-                        <button onClick={()=>onTeamClick(p.team)} className="text-xs text-sky-600 hover:text-sky-800">{p.team}</button>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <TeamBadge name={p.team} size="xs" />
+                          <button onClick={()=>onTeamClick(p.team)} className="text-xs text-sky-600 hover:text-sky-800">{p.team}</button>
+                        </div>
                       </td>
                       <td className="px-3 py-2.5 text-center" style={{fontFamily:MONO}}>{p.pa}</td>
                       <td className="px-3 py-2.5 text-center" style={{fontFamily:MONO}}>{avg(p.stats.h||0, p.stats.ab||0)}</td>
@@ -2188,7 +2213,7 @@ function WARLitePage({ teams, onTeamClick }) {
           <div className="bg-white border border-stone-200 overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-stone-50 border-b border-stone-200">
+                <tr className="bg-stone-50 border-b border-stone-200 sticky top-[80px] z-20">
                   <th className="px-3 py-2 text-left text-xs font-bold text-stone-500 uppercase tracking-wide w-8">#</th>
                   <th className="px-3 py-2 text-left text-xs font-bold text-stone-500 uppercase tracking-wide">Player</th>
                   <th className="px-3 py-2 text-center text-xs font-bold text-stone-500 uppercase tracking-wide">IP</th>
@@ -2211,7 +2236,10 @@ function WARLitePage({ teams, onTeamClick }) {
                         <div className="font-bold text-stone-800" style={{fontFamily:DISPLAY}}>{p.name}
                           {p.grade && <span className="ml-1 text-xs font-normal text-stone-400">{p.grade}</span>}
                         </div>
-                        <button onClick={()=>onTeamClick(p.team)} className="text-xs text-sky-600 hover:text-sky-800">{p.team}</button>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <TeamBadge name={p.team} size="xs" />
+                          <button onClick={()=>onTeamClick(p.team)} className="text-xs text-sky-600 hover:text-sky-800">{p.team}</button>
+                        </div>
                       </td>
                       <td className="px-3 py-2.5 text-center" style={{fontFamily:MONO}}>{p.stats.ip}</td>
                       <td className="px-3 py-2.5 text-center" style={{fontFamily:MONO}}>{era(p.stats.er||0, p.stats.ip||0)}</td>
@@ -2283,6 +2311,7 @@ function LeaderboardsPage({ teams, onTeamClick }) {
         {players.map((p, i) => (
           <div key={i} className={`px-6 py-3 flex items-center gap-3 ${i<3?"bg-amber-50/40":""}`}>
             <span className="w-7 text-center text-sm">{medals[i] || <span className="text-stone-400 font-bold" style={{fontFamily:MONO}}>{i+1}</span>}</span>
+            <TeamBadge name={p.team} size="xs" />
             <div className="flex-1 min-w-0">
               <span className="font-bold text-stone-800 text-sm" style={{fontFamily:DISPLAY}}>{p.name}</span>
               <button onClick={()=>onTeamClick(p.team)} className="block text-xs text-sky-600 hover:text-sky-800 transition-colors">{p.team}</button>
@@ -2380,7 +2409,7 @@ function TeamStatsPage({ teams, onTeamClick }) {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-stone-50 border-b border-stone-100">
+            <tr className="bg-stone-50 border-b border-stone-100 sticky top-[80px] z-20">
               <th className="text-left px-4 py-3 text-xs font-bold text-stone-400 uppercase tracking-wider sticky left-0 bg-stone-50">Team</th>
               {view === "standings" && <>
                 <Th label="W" col="wins"/><Th label="L" col="losses"/><Th label="PCT" col="pct"/>
@@ -2456,6 +2485,7 @@ function AllPlayersPage({ teams, onTeamClick }) {
   const [sortH, setSortH] = useState({ col:"avg", dir:"desc" });
   const [sortP, setSortP] = useState({ col:"era", dir:"asc" });
   const [leagueOnly, setLeagueOnly] = useState(false);
+  const [search, setSearch] = useState("");
 
   const qualHitters  = getQualifiedPlayers(teams, "hitting", leagueOnly);
   const qualPitchers = getQualifiedPlayers(teams, "pitching", leagueOnly);
@@ -2509,8 +2539,11 @@ function AllPlayersPage({ teams, onTeamClick }) {
     gp:   p => p.games,
   };
 
-  const sortedHitters  = sortRows(hitRowsWL, sortH, hitCols);
-  const sortedPitchers = sortRows(pitRowsWL, sortP, pitCols);
+  const searchLc = search.trim().toLowerCase();
+  const matchesSearch = (p) => !searchLc || p.name.toLowerCase().includes(searchLc) || p.team.toLowerCase().includes(searchLc);
+
+  const sortedHitters  = sortRows(hitRowsWL, sortH, hitCols).filter(matchesSearch);
+  const sortedPitchers = sortRows(pitRowsWL, sortP, pitCols).filter(matchesSearch);
 
   const ThH = ({label, col}) => <SortTh label={label} col={col} sort={sortH} setSort={setSortH} />;
   const ThP = ({label, col}) => <SortTh label={label} col={col} sort={sortP} setSort={setSortP} />;
@@ -2522,7 +2555,16 @@ function AllPlayersPage({ teams, onTeamClick }) {
           <h3 className="text-lg font-bold text-stone-800" style={{fontFamily:DISPLAY}}>All Players</h3>
           <p className="text-xs text-stone-400 mt-0.5">Qualified: ≥ 50% of league leader's AB</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="relative">
+            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none">🔎</span>
+            <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search player or team…"
+              className="text-xs pl-7 pr-3 py-1.5 rounded-lg border border-stone-200 focus:border-sky-400 focus:outline-none text-stone-700 w-44 sm:w-56" />
+            {search && (
+              <button onClick={() => setSearch("")} aria-label="Clear search"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 text-xs">✕</button>
+            )}
+          </div>
           <button onClick={() => setLeagueOnly(v => !v)}
             className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all ${leagueOnly ? "bg-sky-600 text-white border-sky-600" : "bg-white text-stone-500 border-stone-200 hover:border-stone-300"}`}>
             {leagueOnly ? "League Games" : "All Games"}
@@ -2541,7 +2583,7 @@ function AllPlayersPage({ teams, onTeamClick }) {
         {view === "hitting" && (
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-stone-50 border-b border-stone-100">
+              <tr className="bg-stone-50 border-b border-stone-100 sticky top-[80px] z-20">
                 <th className="text-center px-3 py-3 text-xs font-bold text-stone-400 uppercase tracking-wider sticky left-0 bg-stone-50 w-8">#</th>
                 <th className="text-left px-4 py-3 text-xs font-bold text-stone-400 uppercase tracking-wider">Player</th>
                 <th className="text-left px-3 py-3 text-xs font-bold text-stone-400 uppercase tracking-wider">Team</th>
@@ -2562,7 +2604,7 @@ function AllPlayersPage({ teams, onTeamClick }) {
             </thead>
             <tbody className="divide-y divide-stone-50">
               {sortedHitters.length === 0 && (
-                <tr><td colSpan={16} className="text-center py-10 text-stone-400 text-sm">No qualified hitters yet. Players need at least 50% of the league leader's at bats.</td></tr>
+                <tr><td colSpan={16} className="text-center py-10 text-stone-400 text-sm">{searchLc ? "No hitters match your search." : "No qualified hitters yet. Players need at least 50% of the league leader's at bats."}</td></tr>
               )}
               {sortedHitters.map((p,i) => {
                 const wl = p.warLite;
@@ -2572,7 +2614,10 @@ function AllPlayersPage({ teams, onTeamClick }) {
                   <td className="px-3 py-3 text-center text-stone-400 font-semibold sticky left-0 bg-white group-hover:bg-sky-50/40 w-8" style={{fontFamily:MONO, fontSize:"0.78rem"}}>{i+1}</td>
                   <td className="px-4 py-3 bg-white group-hover:bg-sky-50/40 font-bold text-stone-800 whitespace-nowrap" style={{fontFamily:DISPLAY, fontSize:"0.85rem"}}>{p.name}{p.pos && <span className="text-stone-400 text-xs ml-1.5 font-normal">{p.pos}</span>}{p.grade && <span className="text-stone-400 text-xs ml-1 font-normal">{p.grade}</span>}</td>
                   <td className="px-3 py-3 whitespace-nowrap">
-                    <button onClick={()=>onTeamClick(p.team)} className="text-xs text-sky-600 hover:text-sky-800 font-semibold transition-colors">{p.team}</button>
+                    <div className="flex items-center gap-1.5">
+                      <TeamBadge name={p.team} size="xs" />
+                      <button onClick={()=>onTeamClick(p.team)} className="text-xs text-sky-600 hover:text-sky-800 font-semibold transition-colors">{p.team}</button>
+                    </div>
                   </td>
                   <td className="px-3 py-3 text-center text-stone-500" style={{fontFamily:MONO}}>{p.games}</td>
                   <td className="px-3 py-3 text-center text-stone-600" style={{fontFamily:MONO}}>{p.stats.ab||0}</td>
@@ -2590,7 +2635,7 @@ function AllPlayersPage({ teams, onTeamClick }) {
         {view === "pitching" && (
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-stone-50 border-b border-stone-100">
+              <tr className="bg-stone-50 border-b border-stone-100 sticky top-[80px] z-20">
                 <th className="text-center px-3 py-3 text-xs font-bold text-stone-400 uppercase tracking-wider sticky left-0 bg-stone-50 w-8">#</th>
                 <th className="text-left px-4 py-3 text-xs font-bold text-stone-400 uppercase tracking-wider">Pitcher</th>
                 <th className="text-left px-3 py-3 text-xs font-bold text-stone-400 uppercase tracking-wider">Team</th>
@@ -2611,7 +2656,7 @@ function AllPlayersPage({ teams, onTeamClick }) {
             </thead>
             <tbody className="divide-y divide-stone-50">
               {sortedPitchers.length === 0 && (
-                <tr><td colSpan={15} className="text-center py-10 text-stone-400 text-sm">No qualified pitchers yet. Players need to appear in ≥ 50% of their team's games.</td></tr>
+                <tr><td colSpan={15} className="text-center py-10 text-stone-400 text-sm">{searchLc ? "No pitchers match your search." : "No qualified pitchers yet. Players need to appear in ≥ 50% of their team's games."}</td></tr>
               )}
               {sortedPitchers.map((p,i) => {
                 const wl = p.warLite;
@@ -2624,7 +2669,10 @@ function AllPlayersPage({ teams, onTeamClick }) {
                     {p.grade && <span className="text-stone-400 text-xs ml-1.5 font-normal">{p.grade}</span>}
                   </td>
                   <td className="px-3 py-3 whitespace-nowrap">
-                    <button onClick={()=>onTeamClick(p.team)} className="text-xs text-sky-600 hover:text-sky-800 font-semibold transition-colors">{p.team}</button>
+                    <div className="flex items-center gap-1.5">
+                      <TeamBadge name={p.team} size="xs" />
+                      <button onClick={()=>onTeamClick(p.team)} className="text-xs text-sky-600 hover:text-sky-800 font-semibold transition-colors">{p.team}</button>
+                    </div>
                   </td>
                   <td className="px-3 py-3 text-center text-stone-500" style={{fontFamily:MONO}}>{p.games}</td>
                   <td className="px-3 py-3 text-center text-stone-600" style={{fontFamily:MONO}}>{p.stats.ip||0}</td>
@@ -2814,9 +2862,20 @@ function StandingsPage({ teams, onTeamClick, onUploadTeams, onUploadSchedule, on
   const TABS = ["home","leaderboards","team stats","all players","scouting","war-lite"];
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    try { return localStorage.getItem("theme") === "dark"; } catch (e) { return false; }
+  });
+  const toggleDarkMode = () => {
+    const next = !darkMode;
+    setDarkMode(next);
+    try {
+      document.documentElement.setAttribute("data-theme", next ? "dark" : "light");
+      localStorage.setItem("theme", next ? "dark" : "light");
+    } catch (e) {}
+  };
 
   return (
-    <div className="min-h-screen text-stone-800" style={{ fontFamily:BODY, backgroundColor:"#f2f2f0" }}>
+    <div className="min-h-screen text-stone-800" style={{ fontFamily:BODY, backgroundColor:"var(--page-bg, #f2f2f0)" }}>
       <FontLink />
 
       {/* ── Top Bar ── */}
@@ -2832,19 +2891,27 @@ function StandingsPage({ teams, onTeamClick, onUploadTeams, onUploadSchedule, on
             {dbStatus === "saved"   && supabaseConfigured?.() && <span className="text-xs text-white/40 flex items-center gap-1"><span style={{width:6,height:6,borderRadius:"50%",background:"#34d399",display:"inline-block"}}/>Saved</span>}
             {dbStatus === "error"   && <span className="text-xs text-red-400 flex items-center gap-1" title={dbError}><span style={{width:6,height:6,borderRadius:"50%",background:"#f87171",display:"inline-block"}}/>Offline</span>}
           </div>
-          {/* Hamburger */}
-          <div className="relative">
-            <button onClick={() => setMenuOpen(m => !m)}
-              className="flex flex-col justify-center items-center gap-1.5 w-9 h-9 rounded transition-colors hover:bg-white/10"
-              aria-label="Menu">
-              <span style={{display:"block",width:18,height:2,background:"white",borderRadius:2,transition:"all 0.2s",transform:menuOpen?"rotate(45deg) translate(3px,3px)":"none"}}/>
-              <span style={{display:"block",width:18,height:2,background:"white",borderRadius:2,transition:"all 0.2s",opacity:menuOpen?0:1}}/>
-              <span style={{display:"block",width:18,height:2,background:"white",borderRadius:2,transition:"all 0.2s",transform:menuOpen?"rotate(-45deg) translate(3px,-3px)":"none"}}/>
+          <div className="flex items-center gap-1">
+            {/* Dark mode toggle */}
+            <button onClick={toggleDarkMode}
+              className="flex items-center justify-center w-9 h-9 rounded transition-colors hover:bg-white/10 text-base"
+              aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+              title={darkMode ? "Switch to light mode" : "Switch to dark mode"}>
+              {darkMode ? "☀️" : "🌙"}
             </button>
-            {menuOpen && (
-              <div className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-2xl border border-stone-100 overflow-hidden w-52 z-50"
-                style={{boxShadow:"0 20px 60px rgba(0,0,0,0.18)"}}>
-                <div className="px-4 py-2 border-b border-stone-100">
+            {/* Hamburger */}
+            <div className="relative">
+              <button onClick={() => setMenuOpen(m => !m)}
+                className="flex flex-col justify-center items-center gap-1.5 w-9 h-9 rounded transition-colors hover:bg-white/10"
+                aria-label="Menu">
+                <span style={{display:"block",width:18,height:2,background:"white",borderRadius:2,transition:"all 0.2s",transform:menuOpen?"rotate(45deg) translate(3px,3px)":"none"}}/>
+                <span style={{display:"block",width:18,height:2,background:"white",borderRadius:2,transition:"all 0.2s",opacity:menuOpen?0:1}}/>
+                <span style={{display:"block",width:18,height:2,background:"white",borderRadius:2,transition:"all 0.2s",transform:menuOpen?"rotate(-45deg) translate(3px,-3px)":"none"}}/>
+              </button>
+              {menuOpen && (
+                <div className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-2xl border border-stone-100 overflow-hidden w-52 z-50"
+                  style={{boxShadow:"0 20px 60px rgba(0,0,0,0.18)"}}>
+                  <div className="px-4 py-2 border-b border-stone-100">
                   <p className="text-xs font-bold text-stone-400 uppercase tracking-widest">Manage League</p>
                 </div>
                 {[
@@ -2861,6 +2928,7 @@ function StandingsPage({ teams, onTeamClick, onUploadTeams, onUploadSchedule, on
                 ))}
               </div>
             )}
+          </div>
           </div>
         </div>
         {/* Tab row — always visible */}
@@ -2891,7 +2959,7 @@ function StandingsPage({ teams, onTeamClick, onUploadTeams, onUploadSchedule, on
 
       {/* ── Hero Photo ── */}
       <div className="relative overflow-hidden" style={{background:"#0a1628", height:200}}>
-        <SeattleSkyline />
+        <TeamLogoWall />
         <div style={{position:"absolute",inset:0,background:"linear-gradient(to right, rgba(8,18,38,0.65) 0%, rgba(8,18,38,0.3) 60%, rgba(8,18,38,0.05) 100%)"}} />
         <div style={{position:"absolute",bottom:0,left:0,right:0,height:80,background:"linear-gradient(to bottom,transparent,rgba(8,18,38,0.35))"}} />
         <div className="relative max-w-6xl mx-auto px-6 h-full flex flex-col justify-center">
