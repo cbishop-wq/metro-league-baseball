@@ -1821,23 +1821,23 @@ function TeamPage({ team, teams, onBack, onUploadSchedule, onAddGame, onDeleteGa
 function TeamLogoWall() {
   const names = Object.keys(TEAM_META);
   return (
-    <div style={{ position:"absolute", inset:0, opacity:0.85 }}>
+    <div style={{ position:"absolute", inset:0 }}>
       <div style={{
         display:"flex", flexWrap:"wrap", alignContent:"center", justifyContent:"center",
-        gap:16, padding:20, height:"100%", overflow:"hidden",
+        gap:14, padding:16, height:"100%", overflow:"hidden",
       }}>
         {names.map((name) => {
           const meta = TEAM_META[name] || { bg:"#334155", text:"#ffffff", init:"?" };
           const logo = TEAM_LOGOS[name];
           return (
             <div key={name} style={{
-              width:60, height:60, borderRadius:12, flexShrink:0,
+              width:48, height:48, borderRadius:10, flexShrink:0,
               background: "#ffffff", display:"flex", alignItems:"center",
               justifyContent:"center", overflow:"hidden",
             }}>
               {logo
-                ? <img src={logo} alt="" style={{width:"100%", height:"100%", objectFit:"contain", padding:5}} />
-                : <span style={{color:meta.bg, fontFamily:DISPLAY, fontWeight:900, fontSize:16}}>{meta.init}</span>}
+                ? <img src={logo} alt="" style={{width:"100%", height:"100%", objectFit:"contain", padding:4}} />
+                : <span style={{color:meta.bg, fontFamily:DISPLAY, fontWeight:900, fontSize:13}}>{meta.init}</span>}
             </div>
           );
         })}
@@ -2955,15 +2955,15 @@ function StandingsPage({ teams, onTeamClick, onUploadTeams, onUploadSchedule, on
       </div>
 
       {/* ── Hero Photo ── */}
-      <div className="relative overflow-hidden" style={{background:"#0a1628", height:200}}>
-        <TeamLogoWall />
-        <div style={{position:"absolute",inset:0,background:"linear-gradient(to right, rgba(8,18,38,0.65) 0%, rgba(8,18,38,0.3) 60%, rgba(8,18,38,0.05) 100%)"}} />
-        <div style={{position:"absolute",bottom:0,left:0,right:0,height:80,background:"linear-gradient(to bottom,transparent,rgba(8,18,38,0.35))"}} />
-        <div className="relative max-w-6xl mx-auto px-6 h-full flex flex-col justify-center">
+      <div className="relative overflow-hidden" style={{background:"#0a1628", height:220}}>
+        <div style={{position:"absolute", top:0, left:0, right:0, height:112}}>
+          <TeamLogoWall />
+        </div>
+        <div style={{position:"absolute",inset:0,background:"linear-gradient(to bottom, rgba(8,18,38,0.1) 0%, rgba(8,18,38,0.55) 58%, rgba(8,18,38,0.95) 100%)"}} />
+        <div className="relative max-w-6xl mx-auto px-6 h-full flex flex-col justify-end pb-5">
           <p className="text-red-400 text-xs font-black uppercase tracking-[0.3em] mb-1" style={{fontFamily:BODY}}>2026 Season</p>
-          <h1 className="text-white leading-none" style={{fontFamily:DISPLAY, fontSize:"clamp(1.6rem,4vw,2.6rem)", fontWeight:900, letterSpacing:"-0.02em", textShadow:"0 2px 20px rgba(0,0,0,0.9)"}}>
-            Seattle Metro<br/>
-            <span style={{color:"#93c5fd"}}>League Baseball</span>
+          <h1 className="text-white whitespace-nowrap" style={{fontFamily:DISPLAY, fontSize:"clamp(1.1rem,3.4vw,2.3rem)", fontWeight:900, letterSpacing:"-0.02em", textShadow:"0 2px 20px rgba(0,0,0,0.9)"}}>
+            Seattle Metro <span style={{color:"#93c5fd"}}>League Baseball</span>
           </h1>
         </div>
       </div>
