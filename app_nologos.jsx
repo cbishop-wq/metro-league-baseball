@@ -564,8 +564,8 @@ function TeamBadge({ name, size = "md" }) {
   const rounded = size === "xs" ? "rounded" : "rounded-lg";
   if (logo) {
     return (
-      <div className={`${sz} ${rounded} flex-shrink-0 overflow-hidden`}
-        style={{ backgroundColor: meta.bg }}>
+      <div className={`${sz} ${rounded} flex-shrink-0 overflow-hidden border border-stone-200`}
+        style={{ backgroundColor: "#ffffff" }}>
         <img src={logo} alt={name} className="w-full h-full object-contain p-0.5" />
       </div>
     );
@@ -1832,12 +1832,12 @@ function TeamLogoWall() {
           return (
             <div key={name} style={{
               width:60, height:60, borderRadius:12, flexShrink:0,
-              background: meta.bg, display:"flex", alignItems:"center",
+              background: "#ffffff", display:"flex", alignItems:"center",
               justifyContent:"center", overflow:"hidden",
             }}>
               {logo
                 ? <img src={logo} alt="" style={{width:"100%", height:"100%", objectFit:"contain", padding:5}} />
-                : <span style={{color:meta.text, fontFamily:DISPLAY, fontWeight:900, fontSize:16}}>{meta.init}</span>}
+                : <span style={{color:meta.bg, fontFamily:DISPLAY, fontWeight:900, fontSize:16}}>{meta.init}</span>}
             </div>
           );
         })}
